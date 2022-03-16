@@ -41,8 +41,7 @@ func Unpack(text string) (string, error) {
 				add(symbol, 1)
 			}
 		} else {
-
-			if operation == false {
+			if !operation {
 				return "", ErrInvalidString
 			}
 

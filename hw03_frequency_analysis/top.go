@@ -9,15 +9,15 @@ import (
 // TopSize - Размер топ-листа.
 const TopSize = 10
 
-var regular = regexp.MustCompile("[^A-Za-zА-Яа-я0-9-]+")
+var regular = regexp.MustCompile("[^A-Za-zА-Яа-я0-9-\\s]+")
 
 // Top10 - получение списка топ-10.
 func Top10(text string) []string {
-	// Преобразование текста в оригинальный список слов (с повторами).
-	list := convertTextToList(text)
+	// Форматирование оригинального текста.
+	text = format(text)
 
-	// Форматирование оригинального списка слов (с повторами).
-	list = formatList(list)
+	// Преобразование текста в оригинальный список слов (с повторами).
+	list := strings.Fields(text)
 
 	// Фильтрация оригинального списка слов (с повторами).
 	list = filterList(list)
@@ -34,22 +34,15 @@ func Top10(text string) []string {
 	return limit(list, TopSize)
 }
 
-// Преобразование текста в оригинальный список слов (с повторами).
-func convertTextToList(text string) []string {
-	return strings.Fields(text)
-}
+// Форматирование оригинального текста.
+func format(text string) string {
+	// Удаление знаков препинания.
+	text = regular.ReplaceAllString(text, "")
 
-// Форматирование оригинального списка слов (с повторами).
-func formatList(list []string) []string {
-	for index, item := range list {
-		// Преобразование к нижнему регистру.
-		item = strings.ToLower(item)
+	// Преобразование к нижнему регистру.
+	text = strings.ToLower(text)
 
-		// Удаление знаков препинания.
-		list[index] = regular.ReplaceAllString(item, "")
-	}
-
-	return list
+	return text
 }
 
 // Фильтрация оригинального списка слов (с повторами).

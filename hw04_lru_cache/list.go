@@ -43,8 +43,7 @@ func (l *list) PushFront(v interface{}) *ListItem {
 	item := &ListItem{Value: v, Next: l.Front()}
 
 	// Установка в соседнем элементе ссылки на новый элемент.
-	firstItem := l.Front()
-	if firstItem != nil {
+	if firstItem := l.Front(); firstItem != nil {
 		firstItem.Prev = item
 	}
 
@@ -66,8 +65,7 @@ func (l *list) PushBack(v interface{}) *ListItem {
 	item := &ListItem{Value: v, Prev: l.Back()}
 
 	// Установка в соседнем элементе ссылки на новый элемент.
-	lastItem := l.Back()
-	if lastItem != nil {
+	if lastItem := l.Back(); lastItem != nil {
 		lastItem.Next = item
 	}
 
@@ -89,17 +87,21 @@ func (l *list) Remove(item *ListItem) {
 	prevItem := item.Prev
 	nextItem := item.Next
 
+	switch {
 	// Если элемент не первый и не последний.
-	if prevItem != nil && nextItem != nil {
+	case prevItem != nil && nextItem != nil:
 		prevItem.Next = nextItem
 		nextItem.Prev = prevItem
-	} else if prevItem != nil { // Если элемент последний.
+	// Если элемент последний.
+	case prevItem != nil:
 		prevItem.Next = nil
 		l.last = prevItem
-	} else if nextItem != nil { // Если элемент первый.
+	// Если элемент первый.
+	case nextItem != nil:
 		nextItem.Prev = nil
 		l.first = nextItem
-	} else { // Если единственный элемент.
+	// Если единственный элемент.
+	default:
 		l.last = nil
 		l.first = nil
 	}

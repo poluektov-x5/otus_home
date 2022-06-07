@@ -49,6 +49,8 @@ func (l *list) PushFront(v interface{}) *ListItem {
 
 	// Установка в списке ссылки на первый элемент.
 	l.first = item
+	// Если новый элемент единственный, установка
+	// в списке ссылки на последний элемент.
 	if l.length == 0 {
 		l.last = item
 	}
@@ -112,8 +114,33 @@ func (l *list) Remove(item *ListItem) {
 
 // MoveToFront - Перемещение элемента в начало списка.
 func (l *list) MoveToFront(item *ListItem) {
-	l.Remove(item)
-	l.PushFront(item.Value)
+	// Если перемещаемый элемент и так первый
+	// (или единственный) в списке.
+	if l.first == item {
+		return
+	}
+
+	// Получение предыдущего и следующего элементов.
+	prevItem := item.Prev
+	nextItem := item.Next
+
+	// Если перемещаемый элемент не последний.
+	if prevItem != nil && nextItem != nil {
+		prevItem.Next = nextItem
+		nextItem.Prev = prevItem
+	} else {
+		prevItem.Next = nil
+		l.last = prevItem
+	}
+
+	// Установка ссылок перемещаемого элемента.
+	item.Prev = nil
+	item.Next = l.first
+
+	// Бывший первый элемент теперь уже второй
+	// и ссылается на первый.
+	l.first.Prev = item
+	l.first = item
 }
 
 func NewList() List {

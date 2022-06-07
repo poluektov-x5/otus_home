@@ -46,7 +46,7 @@ func (c *lruCache) Set(key Key, value interface{}) bool {
 }
 
 // Get - Получение значения из кеша по ключу.
-func (c lruCache) Get(key Key) (interface{}, bool) {
+func (c *lruCache) Get(key Key) (interface{}, bool) {
 	// Получение элемента из словаря.
 	item := c.items[key]
 

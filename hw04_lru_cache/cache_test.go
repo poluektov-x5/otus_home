@@ -50,7 +50,66 @@ func TestCache(t *testing.T) {
 	})
 
 	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+		cache := NewCache(3)
+
+		cache.Set("a", 100)
+		cache.Set("b", 200)
+		cache.Set("c", 300)
+		cache.Set("d", 400)
+
+		value, isFound := cache.Get("a")
+		require.False(t, isFound)
+		require.Nil(t, value)
+
+		value, isFound = cache.Get("b")
+		require.True(t, isFound)
+		require.Equal(t, 200, value)
+
+		value, isFound = cache.Get("c")
+		require.True(t, isFound)
+		require.Equal(t, 300, value)
+
+		value, isFound = cache.Get("d")
+		require.True(t, isFound)
+		require.Equal(t, 400, value)
+	})
+
+	t.Run("complex purge logic", func(t *testing.T) {
+		cache := NewCache(3)
+
+		// Добавление 3-х значений.
+		wasInCache := cache.Set("a", 100) // a
+		require.False(t, wasInCache)
+
+		wasInCache = cache.Set("b", 200) // b a
+		require.False(t, wasInCache)
+
+		wasInCache = cache.Set("c", 300) // c b a
+		require.False(t, wasInCache)
+
+		// Перемешивание значений кеша.
+		value, isFound := cache.Get("a") // a c b
+		require.True(t, isFound)
+		require.Equal(t, 100, value)
+
+		value, isFound = cache.Get("c") // c a b
+		require.True(t, isFound)
+		require.Equal(t, 300, value)
+
+		wasInCache = cache.Set("b", 20) // b c a
+		require.True(t, wasInCache)
+
+		wasInCache = cache.Set("a", 1) // a b c
+		require.True(t, wasInCache)
+
+		// Добавление 4-го значения.
+		wasInCache = cache.Set("d", 400) // d a b
+		require.False(t, wasInCache)
+
+		// Попытка получения значения, которое уже было удалено из кеша.
+		value, isFound = cache.Get("c")
+		require.False(t, isFound)
+		require.Nil(t, value)
 	})
 }
 
